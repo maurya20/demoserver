@@ -1,6 +1,7 @@
 import express, {Request, Application, Response, NextFunction} from "express"
 const userRuter = require("./routes/Users")
 const productRouter = require("./routes/Products")
+const authRouter = require("./routes/authRoute")
 require('dotenv').config()
 import mongoose from "mongoose"
 const PORT = process.env.PORT
@@ -29,9 +30,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json())
 //app.use(cors())
 
-
+app.use("/api", authRouter);
 app.use('/api', userRuter);
-app.use("/api", productRouter)
+app.use("/api", productRouter);
 // app.use('/api', signupRouter)
 // app.use('/api', loginRouter)
 // app.use('/api', loggedRouter)
