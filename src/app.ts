@@ -16,8 +16,10 @@ import * as debug from 'debug';
 
 
 const db = 'mongodb://localhost:27017/demoserver'
-mongoose.connect(db, { useUnifiedTopology: true, useCreateIndex:true, useNewUrlParser: true })
-//mongoose.connection.on('error', err => debug(`MongoDB connection error: ${err}`));
+mongoose.connect(db, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true})
+.then(() => console.log("Successfully connected to database"))
+.catch((err:Error) => { console.log(err)});
+
 
 
 
@@ -72,4 +74,4 @@ function errHandler(err, req, res, next) {
 }
 app.use(errHandler);
 
-app.listen(PORT, ()=> console.log("server is running at port"))
+app.listen(PORT, ()=> console.log(`server is running at port:${PORT}`))
