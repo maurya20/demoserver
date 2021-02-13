@@ -1,14 +1,16 @@
-import jwt from "jsonwebtoken"
-import {Request, Application, Response, NextFunction} from "express"
-
+import { Request, Response, NextFunction } from "express";
+import * as jwt from "jsonwebtoken";
+require('dotenv').config()
+const secret: any = process.env.SECRET
 
 module.exports = function(req:Request, res:Response, next:NextFunction) {
-  const token = req.header("token");
+  const token:any = req.header("token");
+  console.log(token)
   if (!token) return res.status(401).json({ message: "Auth Error" });
 
   try {
-    const decoded = jwt.verify(token, "getOut0fhere");
-    //@ts-ignore
+    const decoded:any = jwt.verify(token, secret);
+  //@ts-ignore
     req.user = decoded.user;
     next();
   } catch (e) {

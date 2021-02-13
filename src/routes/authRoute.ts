@@ -2,20 +2,17 @@ import express, {Request, Application, Response, NextFunction} from "express"
 import { check, validationResult} from "express-validator"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-//import {auth} from "../middleware/auth"
+const auth = require("../middleware/auth")
 const router = express.Router();
 import {User} from "../models/UserModel"
-
+require('dotenv').config()
+const secret: any = process.env.SECRET
 /**
  * @method - POST
  * @param - /signup
  * @description - User SignUp
  */
-interface IUser {
-  username: string;
-  email: string;
-  password: string;
-}
+
 router.post("/signup",[
         check("username", "Please Enter a Valid Username")
         .not()
@@ -43,7 +40,7 @@ router.post("/signup",[
             user = new User({username, email, password});
 
             const salt = await bcrypt.genSalt(10);
-            //@ts-ignore
+           
             user.password = await bcrypt.hash(password, salt);
 
             await user.save();
@@ -54,11 +51,7 @@ router.post("/signup",[
                 }
             };
 
-            jwt.sign(
-                payload,
-                "getOut0fhere", {
-                    expiresIn: 10000
-                },
+            jwt.sign(payload, secret, {expiresIn: 10000},
                 (err, token) => {
                     if (err) throw err;
                     res.status(200).json({
@@ -82,60 +75,58 @@ router.post("/signup",[
  * @description - User SignIn
  */
 
-// router.post("/login",[ check("email", "Please enter a valid email").isEmail(),
-//                      check("password", "Please enter a valid password").isLength({min: 6})
-//                     ],
-//     async (req:Request, res:Response) => {
-//       const errors = validationResult(req);
+router.post("/login",[ check("email", "Please enter a valid email").isEmail(),
+                     check("password", "Please enter a valid password").isLength({min: 6})
+                    ],
+    async (req:Request, res:Response) => {
+      const errors = validationResult(req);
   
-//       if (!errors.isEmpty()) {
-//         return res.status(400).json({
-//           errors: errors.array()
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array()
         
-//         });
-//       }
+        });
+      }
   
-//       const { email, password } = req.body;
-//       try {
-//         let user = await User.findOne({email});
-//         if (!user)
-//           return res.status(400).json({
-//             message: "User Not Exist"
-//           });
+      const { email, password } = req.body;
+      try {
+        let user = await User.findOne({email});
+        if (!user)
+          return res.status(400).json({
+            message: "User Not Exist"
+          });
   
-//         const isMatch = await bcrypt.compare(password, user.password);
-//         if (!isMatch)
-//           return res.status(400).json({
-//             message: "Incorrect Password !"
-//           });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch)
+          return res.status(400).json({
+            message: "Incorrect Password !"
+          });
   
-//         const payload = {
-//           user: {
-//             id: user.id
-//           }
-//         };
+        const payload = {
+          user: {
+            id: user.id
+          }
+        };
   
-//         jwt.sign(
-//           payload,
-//           "getOut0fhere",
-//           {
-//             expiresIn: 3600
-//           },
-//           (err, token) => {
-//             if (err) throw err;
-//             res.status(200).json({
-//               token
-//             });
-//           }
-//         );
-//       } catch (e) {
-//         console.error(e);
-//         res.status(500).json({
-//           message: "Server Error"
-//         });
-//       }
-//     }
-//   );
+        jwt.sign( payload, secret,
+          {
+            expiresIn: 3600
+          },
+          (err, token) => {
+            if (err) throw err;
+            res.status(200).json({
+              token
+            });
+          }
+        );
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({
+          message: "Server Error"
+        });
+      }
+    }
+  );
 
 
 /**
@@ -145,15 +136,16 @@ router.post("/signup",[
  */
 
 
-// router.get("/logged/user", auth, async (req, res) => {
-//     try {
-//       // request.user is getting fetched from Middleware after token authentication
-//       const user = await User.findById(req.user.id);
-//       res.json({"username":user.username,"id":user._id,"email":user.email});
-//     } catch (e) {
-//       res.send({ message: "Error in Fetching user" });
-//     }
-//   });
+router.get("/logged/user", auth, async (req: any, res: any) => {
+    try {
+      // request.user is getting fetched from Middleware after token authentication
+      const user = await User.findById(req.user.id);
+      //@ts-ignore
+      res.json({"username":user.username,"id":user._id,"email":user.email});
+    } catch (e) {
+      res.send({ message: "Error in Fetching user" });
+    }
+  });
 
 
 module.exports = router;

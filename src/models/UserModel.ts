@@ -1,5 +1,11 @@
-import mongoose from "mongoose"
+import mongoose, { Document } from 'mongoose';
 
+
+type IUser = {
+  username: string
+  email: string
+  password: string
+}
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -21,5 +27,5 @@ const UserSchema = new mongoose.Schema({
 });
 
 // export model user with UserSchema
-const User = mongoose.model('User', UserSchema); 
+const User = mongoose.model<IUser & Document>('User', UserSchema); 
 export {User}
