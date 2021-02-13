@@ -1,5 +1,11 @@
-import {Schema} from 'mongoose';
-import * as mongoose from 'mongoose';
+import {Schema,Document} from 'mongoose';
+import mongoose from 'mongoose';
+
+interface IProduct extends Document {
+  name: string;
+  price: any;
+  image:any;
+}
 const productSchema : Schema = new mongoose.Schema({
     name:{ 
       type:String,
@@ -9,10 +15,10 @@ const productSchema : Schema = new mongoose.Schema({
       type:String,
       required:true
      },
-    images:{
-     type:Object,
+    image:{
+     type:String,
      required:true
      }
 });
-let ProductModel = mongoose.model('Product',productSchema);
+let ProductModel = mongoose.model<IProduct>('Product',productSchema);
 export {ProductModel};
