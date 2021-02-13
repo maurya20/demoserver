@@ -1,6 +1,7 @@
 import express, {Request, Application, Response, NextFunction} from "express"
 const userRuter = require("./routes/Users")
-const productRouter = require("./routes/Products")
+//const productRouter = require("./routes/Products")
+import {ProductRoutes} from "./routes/Products"
 const authRouter = require("./routes/authRoute")
 require('dotenv').config()
 import mongoose from "mongoose"
@@ -24,6 +25,7 @@ mongoose.connect(db, {useNewUrlParser: true, useCreateIndex: true, useUnifiedTop
 
     
 
+mongoose.set('useFindAndModify', false);
 
 
 app.use(express.json());
@@ -31,18 +33,19 @@ app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 //app.use(cors())
 
 app.use("/api", authRouter);
 app.use('/api', userRuter);
-app.use("/api", productRouter);
+app.use("/api", ProductRoutes);
 // app.use('/api', signupRouter)
 // app.use('/api', loginRouter)
 // app.use('/api', loggedRouter)
 
 const storage = multer.diskStorage({
     destination: './upload/images',
-    //@ts-ignore
+     //@ts-ignore
     filename: (req:Request, file, cb:any) => {
         return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
     }
@@ -51,7 +54,7 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 10
+        fileSize: 9097152 
     }
 })
 app.use('/profile', express.static('upload/images'));
@@ -59,7 +62,7 @@ app.post("/upload", upload.single('profile'), (req: Request, res:Response) => {
 
     res.json({
         success: 1, 
-        //@ts-ignore
+     
         profile_url: `http://localhost:5000/profile/${req.file.filename}`
     })
 })
