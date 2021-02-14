@@ -1,12 +1,12 @@
 import multer from 'multer';
-
+const path   = require('path');
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, './uploads');
   },
   filename: function(req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, new Date().getTime().toString()+'-'+file.fieldname+path.extname(file.originalname))
   }
 });
 //@ts-ignore
