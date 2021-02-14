@@ -116,4 +116,28 @@ router.delete("/product/:productId", (req, res, next) => {
       });
     });
 });
+
+//// PUT  api
+router.patch("/product/:productId",imageMiddleware.single('image'), (req, res, next) => {
+  const id = req.params.productId;
+  const data = {name:req.body.name, price: req.body.price, image: `http://localhost:5000/${req.file.path}`}
+  console.log("dataaaaa", data)
+  ProductModel.findOneAndUpdate({ _id: id }, { "$set": data} )
+    .exec()
+    .then(result => {
+      res.status(200).json({
+          message: 'Product updated',
+          request: {
+              type: 'GET',
+              url: 'http://localhost:5000/api/products/' + id
+          }
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+    });
+});
 export {router as ProductRoutes};

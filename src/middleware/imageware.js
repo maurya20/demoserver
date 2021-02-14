@@ -7,7 +7,7 @@
 //   filename: function(req, file, fn){
 //     fn(null,  new Date().getTime().toString()+'-'+file.fieldname+path.extname(file.originalname));
 //   }
-// }); 
+// });
 
 // //init
 
@@ -19,7 +19,6 @@
 //   }
 // }).single('photo');
 
-
 // var validateFile = function(file, cb ){
 //   allowedFileTypes = /jpeg|jpg|png|gif/;
 //   const extension = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
@@ -30,6 +29,5 @@
 //     cb("Invalid file type. Only JPEG, PNG and GIF file are allowed.")
 //   }
 // }
-
 
 // module.exports = upload;
