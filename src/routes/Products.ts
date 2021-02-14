@@ -98,4 +98,22 @@ router.post("/product", imageMiddleware.single('image'), (req, res, next) => {
 });
 
 
+///Delete api
+
+router.delete("/product/:productId", (req, res, next) => {
+  const id = req.params.productId;
+  ProductModel.remove({ _id: id })
+    .exec()
+    .then(result => {
+      res.status(200).json({
+          message: 'Product deleted'
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+    });
+});
 export {router as ProductRoutes};
