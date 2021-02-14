@@ -5,7 +5,7 @@ import {imageMiddleware} from "../middleware/imageMiddleware"
 
 
 
-///GET api
+///GET api all producs
 router.get("/products", (req:Request, res:Response, next:NextFunction) => {
   ProductModel.find()
     .select("_id name price image")
@@ -37,6 +37,33 @@ router.get("/products", (req:Request, res:Response, next:NextFunction) => {
     });
 });
 
+////GET single product
+router.get("/product/:productId", (req, res, next) => {
+  const id = req.params.productId;
+  ProductModel.findById(id)
+    .select('name price _id image')
+    .exec()
+    .then(doc => {
+      console.log("From database", doc);
+      if (doc) {
+        res.status(200).json({
+            product: doc,
+            request: {
+                type: 'GET',
+                url: 'http://localhost:5000/api/products'
+            }
+        });
+      } else {
+        res
+          .status(404)
+          .json({ message: "No valid entry found for provided ID" });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: err });
+    });
+});
 ///@Post  api
 router.post("/product", imageMiddleware.single('image'), (req, res, next) => {
   const newproduct = new ProductModel({
